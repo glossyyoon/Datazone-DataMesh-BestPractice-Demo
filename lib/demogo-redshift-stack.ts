@@ -45,7 +45,7 @@ export class DemogoRedshiftStack extends cdk.Stack {
         subnetIds: [publicSubnet]
     })
 
-    const freetipservicecluster = new redshift.CfnCluster(this, "dmg_redshift_provisioned_cluster", {
+    const freetipservicecluster = new redshift.CfnCluster(this, "dmg_freetipservicecluster", {
         clusterType: 'single-node',
         dbName: 'freetipservice_db',
         masterUsername: 'admin',
@@ -56,7 +56,7 @@ export class DemogoRedshiftStack extends cdk.Stack {
         clusterSubnetGroupName: subnetGroup.ref
     });
 
-    const financecluster = new redshift.CfnCluster(this, "dmg_redshift_provisioned_cluster", {
+    const financecluster = new redshift.CfnCluster(this, "dmg_financecluster", {
         clusterType: 'single-node',
         dbName: 'finance_db',
         masterUsername: 'admin',
