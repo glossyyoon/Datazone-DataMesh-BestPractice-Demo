@@ -19,11 +19,6 @@ export class DemogoRedshiftStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
       super(scope, id, props);
 
-    //create VPC
-    // const vpc = new ec2.Vpc(this, 'Vpc', {
-    //     ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16')
-    // });
-    
     //create public subnet
     const vpc = new ec2.Vpc(this, 'ProductionVPC', {
         cidr: '10.0.0.0/16',
@@ -98,7 +93,6 @@ export class DemogoRedshiftStack extends cdk.Stack {
               actions: [
                 "s3:GetObject",
                 "s3:PutObject",
-                ""
               ],
               resources: ["arn:aws:s3:::hvfhs-source-bucket*"]
             })
