@@ -3,9 +3,7 @@ import { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as glue from 'aws-cdk-lib/aws-glue';
-import { aws_sso as sso } from 'aws-cdk-lib';
-import * as redshift from 'aws-cdk-lib/aws-redshift';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 import {
   Role,
@@ -55,7 +53,7 @@ export class DemogoDatazoneStack extends cdk.Stack {
       },
     });
 
-    //create glue cralwer role to access S3 bucket
+    // create glue cralwer role to access S3 bucket
     const glue_crawler_role = new Role(this, "glue-crawler-role", {
       roleName: "AWSGlueServiceRole-AccessS3Bucket",
       description:
@@ -69,6 +67,20 @@ export class DemogoDatazoneStack extends cdk.Stack {
       ],
       assumedBy: new ServicePrincipal(glue_ServiceUrl),
     });
+    glue_crawler_role.attachInlinePolicy(
+      new iam.Policy(this, 'cw-logs', {
+        statements: [
+          new iam.PolicyStatement({
+            actions: [
+              "s3:GetObject",
+              "s3:PutObject",
+              "glue:*"
+            ],
+            resources: ["arn:aws:s3:::hvfhs-source-bucket*"]
+          })
+        ]
+      })
+    );//확인
     this.glueRole = glue_crawler_role;
 
     //add policy to role to grant access to S3 asset bucket and public buckets
@@ -199,35 +211,6 @@ export class DemogoDatazoneStack extends cdk.Stack {
         },
       }
     );
-
-    //run Glue crawler
-    // const cfnTrigger_green = new glue.CfnTrigger(this, 'MyCfnTrigger-green', {
-    //   type: 'ON_DEMAND',
-    //   startOnCreation: false, //물어보기
-
-    //   actions: [{
-    //     crawlerName: glue_crawler_s3_parquet_green.name,
-    //   }],
-
-    //   // predicate: {
-    //   //   conditions: [{
-    //   //     crawlerName: glue_crawler_s3_parquet.name,
-    //   //     logicalOperator: "EQUALS",
-    //   //     state: "SUCCEEDED",
-    //   //     crawlState: "SUCCEEDED"
-    //   //   }],
-    //   // },
-
-    // });
-
-    // const cfnTrigger_nonhighvolume = new glue.CfnTrigger(this, 'MyCfnTrigger-nonhighvolume', {
-    //   type: 'ON_DEMAND',
-    //   startOnCreation: false, //물어보기
-
-    //   actions: [{
-    //     crawlerName: glue_crawler_s3_parquet_nonhighvolume.name,
-    //   }],
-    // });
 
     const cfnTrigger_green = new glue.CfnTrigger(this, 'MyCfnTrigger-green', {
       type: 'ON_DEMAND',
