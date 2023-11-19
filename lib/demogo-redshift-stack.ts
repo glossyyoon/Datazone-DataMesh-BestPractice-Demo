@@ -2,6 +2,16 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as redshift from 'aws-cdk-lib/aws-redshift';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+import {
+    Role,
+    ManagedPolicy,
+    ServicePrincipal
+} from 'aws-cdk-lib/aws-iam';
+
+const redshift_managed_policy = "arn:aws:iam::aws:policy/service-role/AWSServiceRoleForRedshift";
+const redshift_service_url = "redshift.amazonaws.com";
 
 export class DemogoRedshiftStack extends cdk.Stack {
     
@@ -9,6 +19,11 @@ export class DemogoRedshiftStack extends cdk.Stack {
     constructor(scope: Construct, id: string, props?: cdk.StackProps) {
       super(scope, id, props);
 
+    //create VPC
+    // const vpc = new ec2.Vpc(this, 'Vpc', {
+    //     ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16')
+    // });
+    
     //create public subnet
     const vpc = new ec2.Vpc(this, 'ProductionVPC', {
         cidr: '10.0.0.0/16',
@@ -41,6 +56,17 @@ export class DemogoRedshiftStack extends cdk.Stack {
         subnetIds: [publicSubnet]
     })
 
+    const freetipservicecluster = new redshift.CfnCluster(this, "dmg_freetipservicecluster", {
+        clusterType: 'single-node',
+        dbName: 'freetipservice_db',
+        masterUsername: 'admin',
+        masterUserPassword: 'Admin1234!',
+        nodeType: 'ra3.xlplus',
+
+        availabilityZone:'us-east-1a',
+        clusterSubnetGroupName: subnetGroup.ref
+    });
+
     const financecluster = new redshift.CfnCluster(this, "dmg_financecluster", {
         clusterType: 'single-node',
         dbName: 'finance_db',
@@ -51,6 +77,5 @@ export class DemogoRedshiftStack extends cdk.Stack {
         availabilityZone:'us-east-1a',
         clusterSubnetGroupName: subnetGroup.ref
     });
-
     }
 }
