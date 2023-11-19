@@ -80,7 +80,7 @@ export class DemogoDatazoneStack extends cdk.Stack {
           })
         ]
       })
-    );//확인
+    );
     this.glueRole = glue_crawler_role;
 
     //add policy to role to grant access to S3 asset bucket and public buckets
@@ -111,32 +111,6 @@ export class DemogoDatazoneStack extends cdk.Stack {
 
     const outputPath = "s3://" + s3SourceBucket + "/crawler-result";
 
-    //create glue crawler to crawl parqet files in S3
-    // const glue_crawler_s3_parquet_fhvhv = new glue.CfnCrawler(
-    //   this,
-    //   "glue_crawler_s3_parquet_fhvhv",
-    //   {
-    //     name: "s3-parquet-crawler-fhvhv",
-    //     role: glue_crawler_role.roleName,
-    //     targets: {
-    //       // catalogTargets: [{
-    //       //   databaseName: 'tlc_glue_database',
-    //       //   tables: ['fhvhv_tripdata_table'],
-    //       // }],
-    //       s3Targets: [
-    //         {
-    //           path: "s3://" + s3SourceBucket.bucketName + "/TLCdata/hvfhs_tripdata",
-    //         },
-    //       ],
-    //     },
-    //     databaseName: 'tlc_glue_database',
-    //     schemaChangePolicy: {
-    //       updateBehavior: "LOG",
-    //       deleteBehavior: "DEPRECATE_IN_DATABASE",
-    //     },
-    //   }
-    // );
-
     const glue_crawler_s3_parquet_nonhighvolume = new glue.CfnCrawler(
       this,
       "glue_crawler_s3_parquet_nonhighvolume",
@@ -144,10 +118,6 @@ export class DemogoDatazoneStack extends cdk.Stack {
         name: "s3-parquet-crawler-nonhighvolume",
         role: glue_crawler_role.roleName,
         targets: {
-          // catalogTargets: [{
-          //   databaseName: 'tlc_glue_database',
-          //   tables: ['nonhighvolume_tripdata_table'],
-          // }],
           s3Targets: [
             {
               path: "s3://" + s3SourceBucket.bucketName + "/TLCdata/nonhighvolume_hvfhs",
@@ -169,10 +139,6 @@ export class DemogoDatazoneStack extends cdk.Stack {
         name: "s3-parquet-crawler-green",
         role: glue_crawler_role.roleName,
         targets: {
-          // catalogTargets: [{
-          //   databaseName: 'tlc_glue_database',
-          //   tables: ['green_tripdata_table'],
-          // }],
           s3Targets: [
             {
               path: "s3://" + s3SourceBucket.bucketName + "/TLCdata/green_tripdata",
@@ -194,10 +160,6 @@ export class DemogoDatazoneStack extends cdk.Stack {
         name: "s3-parquet-crawler-yellow",
         role: glue_crawler_role.roleName,
         targets: {
-          // catalogTargets: [{
-          //   databaseName: 'tlc_glue_database',
-          //   tables: ['yellow_tripdata_table'],
-          // }],
           s3Targets: [
             {
               path: "s3://" + s3SourceBucket.bucketName + "/TLCdata/yellow_tripdata",
@@ -214,8 +176,7 @@ export class DemogoDatazoneStack extends cdk.Stack {
 
     const cfnTrigger_green = new glue.CfnTrigger(this, 'MyCfnTrigger-green', {
       type: 'ON_DEMAND',
-      startOnCreation: false, //물어보기
-
+      startOnCreation: false,
       actions: [{
         crawlerName: glue_crawler_s3_parquet_green.name,
       }],
@@ -223,8 +184,7 @@ export class DemogoDatazoneStack extends cdk.Stack {
 
     const cfnTrigger_yellow = new glue.CfnTrigger(this, 'MyCfnTrigger-yellow', {
       type: 'ON_DEMAND',
-      startOnCreation: false, //물어보기
-
+      startOnCreation: false,
       actions: [{
         crawlerName: glue_crawler_s3_parquet_yellow.name,
       }],
@@ -232,31 +192,12 @@ export class DemogoDatazoneStack extends cdk.Stack {
 
     // create a permission set
     const permissionSetExample = new CfnPermissionSet(this, 'permissionSet', {
-      instanceArn: 'arn:aws:sso:::instance/ssoins-7223e4c57ec878e9',
+      instanceArn: process.env.INSTANCE_ARN || "{instance_arn}",
       name: 'AdminPermissionSet',
       description: 'Permission set for Admin.',
       managedPolicies:  [
         "arn:aws:iam::aws:policy/AdministratorAccess"
       ],
-      // customerManagedPolicyReferences: [
-      //   {
-      //     name: 'AdminPermissionSet', // must exist in the target account
-      //     path: '/dmg/',
-      //   }
-      // ],
     })
-
-    // const cfnAssignment = new sso.CfnAssignment(this, 'MyCfnAssignment', {
-    //   instanceArn: '',
-    //   permissionSetArn: permissionSetExample.instanceArn,
-    //   principalId: '',
-    //   principalType: '',
-    //   targetId: '',
-    //   targetType: ''
-    // });
-    
-    
-
   }
-    
 }
