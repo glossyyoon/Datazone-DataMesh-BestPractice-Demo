@@ -1,6 +1,6 @@
 # Download
 
-Download CDK source code
+Download CDK source code
 * `git clone https://github.com/glossyyoon/Datazone-DataMesh-BestPractice-Demo.git`
 * `cd Datazone-DataMesh-BestPractice-Demo`
 
