@@ -1,14 +1,16 @@
-# Welcome to your CDK TypeScript project
+# Download
 
-This is a blank project for CDK development with TypeScript.
+Download CDK source code
+* `git clone https://github.com/glossyyoon/Datazone-DataMesh-BestPractice-Demo.git`
+* `cd Datazone-DataMesh-BestPractice-Demo`
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+Download dependencies
+* `npm install -g aws-cdk`
+* `npm install`
+* `npm run build`
 
-## Useful commands
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+# Deploy RedshiftStack using AWS Account
+
+* `cdk bootstrap`
+* `cdk deploy DemogoRedshiftStack`
